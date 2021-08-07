@@ -94,8 +94,8 @@ WSGI_APPLICATION = 'appscraper.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# DATABASE_URL = os.environ['DATABASE_URL']
-# conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+DATABASE_URL = os.environ['DATABASE_URL']
+conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
 DATABASES = {
     'default': {
@@ -115,8 +115,8 @@ DATABASES = {
     }
 }
 
-# DATABASES['default'] = dj_database_url.config(
-#     conn_max_age=600, ssl_require=True)
+DATABASES['default'] = dj_database_url.config(
+    conn_max_age=600, ssl_require=True)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -210,4 +210,4 @@ CELERY_BEAT_SCHEDULE = {
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
-# django_heroku.settings(locals())
+django_heroku.settings(locals())
