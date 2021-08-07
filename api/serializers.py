@@ -55,9 +55,12 @@ class SubscriberSerializer(serializers.ModelSerializer):
         """
         print("VALIDS:", validated_data)
         country_created = False  # To check if existing user adds new country
-        validated_data, app_created, platform = self.create_apps(validated_data)
-        validated_data, send_mail = self.create_country(validated_data, app_created)
-        subscriber, sub_created, = Subscriber.objects.get_or_create(email=validated_data['email'])
+        validated_data, app_created, platform = self.create_apps(
+            validated_data)
+        validated_data, send_mail = self.create_country(
+            validated_data, app_created)
+        subscriber, sub_created, = Subscriber.objects.get_or_create(
+            email=validated_data['email'])
         if 'app_store' in validated_data:
             app_store_obj = validated_data['app_store']
             if app_store_obj not in subscriber.app_store.all():
@@ -75,8 +78,9 @@ class SubscriberSerializer(serializers.ModelSerializer):
         print("COUNTRY_CREATED:", country_created)
         print("APP:", app_created)
         subscriber.country.add(country_obj)
-        if send_mail:  # checks if new object was created and sends email confirmation
-            send_subscribe_email_task.delay(validated_data['email'], app_name, platform, country_obj.country_name)
+        if True:  # checks if new object was created and sends email confirmation
+            send_subscribe_email_task.delay(
+                validated_data['email'], app_name, platform, country_obj.country_name)
             subscriber.save()
             return subscriber
         raise serializers.ValidationError()
@@ -95,7 +99,8 @@ class SubscriberSerializer(serializers.ModelSerializer):
             country_code = country.pop("country_code")
             country_name = convert_iso_to_country(country_code)
             print("COUNTRY_NAME:", country_name)
-            country, created = Country.objects.get_or_create(country_code=country_code)
+            country, created = Country.objects.get_or_create(
+                country_code=country_code)
             if app_store:
                 app_store_obj = validated_data['app_store']
                 print("APPSTORE:", app_store_obj)
