@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-fr1vfpojn&=^75zi0los*=eox%gl(kyax#un#dyu2d(^8uk=lc'
+SECRET_KEY = os.environ("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -165,11 +165,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
 
 # EMAIL CONFIGURATIONS
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'alerts@alertific.com'
-EMAIL_HOST_PASSWORD = 'Gmmatthew1991!'
-DEFAULT_FORM_EMAIL = 'alerts@alertific.com'
-SERVER_EMAIL = 'alerts@alertific.com'
+EMAIL_HOST = os.environ("EMAIL_HOST")
+EMAIL_HOST_USER = os.environ("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ("EMAIL_HOST_PASSWORD")
+DEFAULT_FORM_EMAIL =  os.environ("DEFAULT_FORM_EMAIL")
+SERVER_EMAIL = os.environ("SERVER_EMAIL")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
@@ -185,7 +185,7 @@ CELERY_TIMEZONE = 'Asia/Kolkata'
 CELERY_BEAT_SCHEDULE = {
     "send_review_email": {
         "task": "subscribe.tasks.send_app_reviews",
-        "schedule": crontab(minute='*/30', ),
+        "schedule": crontab(),
     }
 }
 
