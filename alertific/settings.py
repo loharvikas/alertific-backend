@@ -175,6 +175,7 @@ EMAIL_USE_TLS = True
 
 # CELERY CONFIGURATIONS
 from celery.schedules import crontab
+
 CELERY_BROKER_URL = os.environ['REDIS_URL']
 CELERY_RESULT_BACKEND = os.environ['REDIS_URL']
 CELERY_ACCEPT_CONTENT = ['application/json']
@@ -184,7 +185,7 @@ CELERY_TIMEZONE = 'Asia/Kolkata'
 CELERY_BEAT_SCHEDULE = {
     "send_review_email": {
         "task": "subscribe.tasks.send_app_reviews",
-        "schedule": crontab(minute=0, hour='*/3'),
+        "schedule": crontab(minute='*/30', ),
     }
 }
 

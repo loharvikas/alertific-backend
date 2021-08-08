@@ -78,7 +78,7 @@ class SubscriberSerializer(serializers.ModelSerializer):
         print("COUNTRY_CREATED:", country_created)
         print("APP:", app_created)
         subscriber.country.add(country_obj)
-        if True:  # checks if new object was created and sends email confirmation
+        if send_mail:  # checks if new object was created and sends email confirmation
             print("SENDING")
             send_subscribe_email_task.delay(
                 validated_data['email'], app_name, platform, country_obj.country_name)
