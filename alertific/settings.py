@@ -168,7 +168,7 @@ AUTH_USER_MODEL = 'users.User'
 EMAIL_HOST = os.environ["EMAIL_HOST"]
 EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
 EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
-DEFAULT_FORM_EMAIL =  os.environ["DEFAULT_FORM_EMAIL"]
+DEFAULT_FORM_EMAIL = os.environ["DEFAULT_FORM_EMAIL"]
 SERVER_EMAIL = os.environ["SERVER_EMAIL"]
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
@@ -185,7 +185,7 @@ CELERY_TIMEZONE = 'Asia/Kolkata'
 CELERY_BEAT_SCHEDULE = {
     "send_review_email": {
         "task": "subscribe.tasks.send_app_reviews",
-        "schedule": crontab(),
+        'schedule': crontab(hour=8, minute=30),
     }
 }
 

@@ -65,6 +65,7 @@ def scrap_app_reviews_for_app_store_specific_country(id, country_code, country_n
     app = AppStore.objects.get(pk=id)
     result = fetch_reviews_from_app_store(app.app_id, country_code)
     if result:
+        print("RESULT")
         send_review_email_task.delay(email=email,
                                      app_id=app.app_id,
                                      reviews=result,
