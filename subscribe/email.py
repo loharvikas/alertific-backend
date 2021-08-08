@@ -4,6 +4,7 @@ from django.conf import settings
 
 
 def send_subscribed_email(email, app_id, platform, country):
+    print("SEND")
     """
     Sends confirmation mail to new users.
     :param email:
@@ -28,7 +29,9 @@ def send_subscribed_email(email, app_id, platform, country):
         [email, ]
     )
     email.attach_alternative(html_content, 'text/html')
+    print("DONE")
     return email.send(fail_silently=False)
+
 
 
 def send_feedback_email(email, message):
