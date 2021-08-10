@@ -9,8 +9,10 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+from __future__ import absolute_import
 
 from pathlib import Path
+from celery.schedules import crontab
 import psycopg2
 import django_heroku
 import dj_database_url
@@ -99,22 +101,10 @@ WSGI_APPLICATION = 'appscraper.wsgi.application'
 
 DATABASES = {
     'default': {
-
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-
-        'NAME': 'app_reviews',
-
-        'USER': 'vikas',
-
-        'PASSWORD': 'vikas123',
-
-        'HOST': 'localhost',
-
-        'PORT': '',
-
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 # DATABASES['default'] = dj_database_url.config(
 #     conn_max_age=600, ssl_require=True)
 
@@ -202,7 +192,7 @@ CELERY_TIMEZONE = 'Asia/Kolkata'
 CELERY_BEAT_SCHEDULE = {
     "send_review_email": {
         "task": "subscribe.tasks.send_app_reviews",
-        "schedule": 30.0
+        "schedule": crontab()
     }
 }
 
