@@ -49,21 +49,19 @@
             margin-top: 0.4rem;
         }
 
+
         .container .img {
-            display: flex;
-            justify-content: center;
-            position: relative;
-            margin-top: 2rem;
-        }
-        .container .img > div{
-            border: 1px solid gray;
-            padding: 0.5rem;
+            width: 100%;
+            text-align: center;
+            margin-top: 1.5rem;
         }
 
-        .container .img .app-icon {
-            margin-left:-1px;
+        .container .img div{
+            display: inline;
         }
-
+        .container .img  .platform-icon {
+            margin-right: 1rem;
+        }
         @media screen and (max-width:600px){
             .container{
                width: 90%;
@@ -78,14 +76,14 @@
         </div>
         <div class="img">
             <div class="platform-icon">
-                {% if platform == "Google Play"%}
-                    <img src="https://drive.google.com/thumbnail?id=1vF-jBy564bHSlF-BNYGlg1xV-I_3LZ1" height="35px" width="35px">
+                {% if platform == "Google Play" %}
+                    <img src="https://drive.google.com/thumbnail?id=1vF-jBy564bHSlF-BNYGlg1xV-I_3LZ1G" height="35px" width="35px">
                 {% else %}
                     <img src="https://drive.google.com/thumbnail?id=1iNIGgS1iBu78RQgKMeNJhxCYO1kY8ca3" height="35px" width="35px">
                 {% endif %}
             </div>
             <div class="app-icon">
-                <img src={{app_icon}} width="35px" height="35px">
+                <img src={{ app_icon }} width="35px" height="35px">
             </div>
         </div>
         <div class="app-name">
