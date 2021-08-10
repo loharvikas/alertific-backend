@@ -12,7 +12,8 @@ def is_yesterday(timestamp):
     """
     today = datetime.combine(datetime.today(), time.min) + timedelta(hours=9)
     yesterday = today - timedelta(days=1)
-    return yesterday <= timestamp < today
+    return True
+    # return yesterday <= timestamp < today
 
 
 def fetch_reviews_from_app_store(app_id, country_code):
