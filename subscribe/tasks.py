@@ -7,9 +7,9 @@ from .email import send_feedback_email
 
 
 @shared_task
-def send_subscribe_email_task(email, app_id, platform, country):
+def send_subscribe_email_task(email, app_id, platform, country, app_icon):
     logger.info("Email Sent")
-    return send_subscribed_email(email, app_id, platform, country)
+    return send_subscribed_email(email, app_id, platform, country, app_icon)
 
 
 @shared_task

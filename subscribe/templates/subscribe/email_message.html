@@ -14,7 +14,7 @@
 
         body{
             font-family: sans-serif;
-            background-color: rgb(243, 236, 236);
+            background-color: white;
             line-height: 1.4rem;
         }
 
@@ -31,8 +31,6 @@
         .container .brand {
             text-align: center;
             padding-top:1rem;
-            /* margin-top: 1rem; */
-            background-color: white;
         }
 
         .container .brand .brand-name {
@@ -42,7 +40,6 @@
         .container .app-name {
             text-align: center;
             padding: 1rem;
-            background-color: white;
         }
         .container .app-name .name {
               color: royalblue;
@@ -52,9 +49,18 @@
             margin-top: 0.4rem;
         }
 
-        .container .content {
-            padding: 1rem;
-            background-color: white;
+
+        .container .img {
+            width: 100%;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .container .img div{
+            display: inline;
+        }
+        .container .img  .platform-icon {
+            margin-right: 1rem;
         }
         @media screen and (max-width:600px){
             .container{
@@ -67,6 +73,18 @@
     <div class="container">
         <div class="brand">
             <h1 class="brand-name">Alertific</h1>
+        </div>
+        <div class="img">
+            <div class="platform-icon">
+                {% if platform == "Google Play" %}
+                    <img src="https://drive.google.com/thumbnail?id=1vF-jBy564bHSlF-BNYGlg1xV-I_3LZ1G" height="35px" width="35px">
+                {% else %}
+                    <img src="https://drive.google.com/thumbnail?id=1iNIGgS1iBu78RQgKMeNJhxCYO1kY8ca3" height="35px" width="35px">
+                {% endif %}
+            </div>
+            <div class="app-icon">
+                <img src={{ app_icon }} width="35px" height="35px">
+            </div>
         </div>
         <div class="app-name">
             <h3 class="name">Your daily alert of new app reviews is live</h3>
