@@ -9,3 +9,4 @@ urlpatterns = [
     path("google/<str:app_name>/<str:country_code>/", GooglePlayAppListView.as_view(), name="google-app-list"),
     path("apple/<str:app_name>/<str:country_code>/", AppStoreAppListView.as_view(), name="app-store-app-list"),
 ]
+3
