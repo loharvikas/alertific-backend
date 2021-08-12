@@ -186,7 +186,7 @@ CELERY_TIMEZONE = 'Asia/Kolkata'
 CELERY_BEAT_SCHEDULE = {
     "send_review_email": {
         "task": "subscribe.tasks.send_app_reviews",
-        'schedule': crontab(minute="*/15"),
+        'schedule': crontab(minute=0, hour="*/3"),
     }
 }
 
