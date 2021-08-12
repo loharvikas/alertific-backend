@@ -2,7 +2,7 @@ from celery import shared_task
 from subscribe.email import send_subscribed_email, send_review_email
 from celery.utils.log import logger
 from .scrapper import fetch_reviews_from_google_play, fetch_reviews_from_app_store
-from .models import Subscriber, GooglePlay, AppStore
+from .models import Subscriber, GooglePlay, AppStore, Subscription
 from .email import send_feedback_email
 
 
@@ -20,98 +20,57 @@ def send_feedback_email_task(email, message):
 
 @shared_task
 def send_app_reviews():
-    scrap_google_play.delay()
-    scrap_app_store.delay()
+    for subscriber in Subscriber.objects.all():
+        id = subscriber.id
+        print(id)
+        send_reviews_based_on_subscription.delay(id)
 
 
 @shared_task
-def scrap_google_play():
-    apps = GooglePlay.objects.all()
-    for app in apps:
-        scrap_app_reviews_for_google_play.delay(app.pk)
+def send_reviews_based_on_subscription(id):
+    subscriber = Subscriber.objects.get(id=id)
+    subscriptions = Subscription.objects.filter(subscriber=subscriber)
+    for subscription in subscriptions:
+        country_code = subscription.country.country_code
+        country_name = subscription.country.country_name
+        email = subscription.subscriber.email
 
+        if subscription.app_store:
+            id = subscription.app_store.id
+            scrap_app_reviews_for_app_store.delay(id, country_code, country_name, email)
 
-@shared_task
-def scrap_app_store():
-    apps = AppStore.objects.all()
-    for app in apps:
-        print("APP:", app)
-        scrap_app_reviews_for_app_store.delay(app.pk)
-
-
-@shared_task
-def scrap_app_reviews_for_app_store(id):
-    """
-       Scrap app reviews and send emails to subscribed users
-    :param id:
-    :return: None
-    """
-    app = AppStore.objects.get(pk=id)
-    subscriber_list = app.subscriber.all()
-    for subscriber in subscriber_list:
-        print("SUBSCRIBER: SENDING EMAILS APP STORE", subscriber.email)
-        countries = subscriber.country.all()  # List of countries
-        for country in countries:
-            if app in country.app_store.all():
-                print("YES")
-                scrap_app_reviews_for_app_store_specific_country.delay(id=id,
-                                                                       country_code=country.country_code,
-                                                                       country_name=country.country_name,
-                                                                       email=subscriber.email)
-        # for i in range(len(country)):
-        #     scrap_app_reviews_for_app_store_specific_country.delay(id=id,
-        #                                                            country_code=country[i].code,
-        #                                                            country_name=country[i].name,
-        #                                                            email=subscriber.email)
-
+        elif subscription.google_play:
+            id = subscription.google_play.id
+            scrap_app_reviews_for_google_play.delay(id, country_code, country_name, email)
 
 @shared_task
-def scrap_app_reviews_for_app_store_specific_country(id, country_code, country_name, email):
+def scrap_app_reviews_for_app_store(id, country_code, country_name, email):
     app = AppStore.objects.get(pk=id)
     result = fetch_reviews_from_app_store(app.app_id, country_code)
-    send_review_email_task.delay(email=email,
-                                 app_id=app.app_id,
-                                 reviews=result,
-                                 app_name=app.app_name,
-                                 platform="App Store",
-                                 app_icon=app.app_icon,
-                                 country_name=country_name
-                                 )
-
-
-@shared_task
-def scrap_app_reviews_for_google_play(id):
-    """
-    Scrap app reviews and send emails to subscribed users
-    :param id:
-    :return: None
-    """
-    app = GooglePlay.objects.get(pk=id)
-    subscriber_list = app.subscriber.all()
-    for subscriber in subscriber_list:
-        print("SUBSCRIBER: SENDING EMAILS", subscriber.email)
-        countries = subscriber.country.all()
-        for country in countries:
-            if app in country.google_play.all():
-                print("YES")
-                scrap_app_reviews_for_google_play_specific_country.delay(id=id,
-                                                                         country_code=country.country_code,
-                                                                         country_name=country.country_name,
-                                                                         email=subscriber.email)
-
+    if result:
+        send_review_email_task.delay(email=email,
+                                     app_id=app.app_id,
+                                     reviews=result,
+                                     app_name=app.app_name,
+                                     platform="App Store",
+                                     app_icon=app.app_icon,
+                                     country_name=country_name
+                                     )
 
 @shared_task
-def scrap_app_reviews_for_google_play_specific_country(id, country_code, country_name, email):
+def scrap_app_reviews_for_google_play(id, country_code, country_name, email):
     app = GooglePlay.objects.get(pk=id)
     result = fetch_reviews_from_google_play(app.app_id, country_code)
-    send_review_email_task.delay(email=email,
-                                 app_id=app.app_id,
-                                 reviews=result,
-                                 app_name=app.app_name,
-                                 platform="Google Play",
-                                 app_icon=app.app_icon,
-                                 country_name=country_name
-                                 )
+    if result:
+        send_review_email_task.delay(email=email,
+                                     app_id=app.app_id,
+                                     reviews=result,
+                                     app_name=app.app_name,
+                                     platform="Google Play",
+                                     app_icon=app.app_icon,
+                                     country_name=country_name
+                                    )
+
 
 
 @shared_task

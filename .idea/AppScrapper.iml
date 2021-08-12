@@ -7,11 +7,4 @@
     <orderEntry type="jdk" jdkName="Python 3.9 (alertific-backend)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
-  <component name="TemplatesService">
-    <option name="TEMPLATE_FOLDERS">
-      <list>
-        <option value="$MODULE_DIR$/env/lib/python3.9/site-packages/django/forms/templates" />
-      </list>
-    </option>
-  </component>
 </module>

@@ -1,6 +1,6 @@
 from rest_framework.viewsets import generics
-from subscribe.models import Subscriber, Feedback
-from .serializers import SubscriberSerializer, FeedbackSerializer
+from subscribe.models import Subscriber, Feedback, Subscription
+from .serializers import SubscriberSerializer, FeedbackSerializer, SubscriptionSerializer
 from rest_framework.permissions import AllowAny
 from django.views.generic import View
 import play_scraper
@@ -24,6 +24,12 @@ class SubscriberDetailView(generics.RetrieveAPIView):
     queryset = Subscriber.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = SubscriberSerializer
+
+
+class SubscriptionListView(generics.ListCreateAPIView):
+    queryset = Subscription.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = SubscriptionSerializer
 
 
 class FeedbackSerializerView(generics.ListCreateAPIView):
@@ -86,5 +92,3 @@ class AppStoreAppListView(View):
             detail['icon'] = detail.pop('artworkUrl512')
             data.append(detail)
         return JsonResponse(data, safe=False)
-
-

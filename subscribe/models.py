@@ -1,3 +1,4 @@
+
 from django.db import models
 
 
@@ -23,19 +24,24 @@ class AppStore(models.Model):
 
 class Subscriber(models.Model):
     email = models.EmailField(unique=False)
-    google_play = models.ManyToManyField(GooglePlay, related_name='subscriber')
-    app_store = models.ManyToManyField(AppStore, related_name='subscriber')
-    country = models.ManyToManyField('Country', related_name="subscriber")
+    created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     def __str__(self):
         return self.email
 
 
+class Subscription(models.Model):
+    google_play = models.ForeignKey(GooglePlay, on_delete=models.SET_NULL, null=True, blank=True)
+    app_store = models.ForeignKey(AppStore, on_delete=models.SET_NULL, null=True, blank=True)
+    country = models.ForeignKey('Country', on_delete=models.SET_NULL, null=True,  blank=True)
+    subscriber = models.ForeignKey(Subscriber, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+
 class Country(models.Model):
     country_code = models.CharField(max_length=2, unique=True)
     country_name = models.CharField(max_length=50, null=True, blank=True)
-    google_play = models.ManyToManyField(GooglePlay, related_name='countries')
-    app_store = models.ManyToManyField(AppStore, related_name='countries')
+
 
     def __str__(self):
         return self.country_code

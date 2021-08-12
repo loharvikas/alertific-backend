@@ -4,6 +4,7 @@ from django.conf import settings
 
 
 def send_subscribed_email(email, app_id, platform, country, app_icon):
+    print("SEND")
     """
     Sends confirmation mail to new users.
     :param email:
@@ -16,7 +17,7 @@ def send_subscribed_email(email, app_id, platform, country, app_icon):
         'app_name': app_id,
         'platform': platform,
         'country': country,
-        "app_icon": app_icon
+        "app_icon": app_icon,
     }
 
     email_subject = "Your daily alert of new app reviews is live"
@@ -29,7 +30,9 @@ def send_subscribed_email(email, app_id, platform, country, app_icon):
         [email, ]
     )
     email.attach_alternative(html_content, 'text/html')
+    print("DONE")
     return email.send(fail_silently=False)
+
 
 
 def send_feedback_email(email, message):
@@ -53,7 +56,6 @@ def send_feedback_email(email, message):
 
 def send_review_email(email, app_name, app_id, reviews, platform, app_icon, country):
     """
-
     :param email: User's email.
     :param app_name: App name of subscribed app.
     :param app_id: Unique App Id
