@@ -89,7 +89,8 @@ class SubscriptionSerializer(serializers.ModelSerializer):
                                                    app_name,
                                                    platform,
                                                    country.country_name,
-                                                   app_icon)
+                                                   app_icon,
+                                            subscription.pk)
             return subscription
         raise serializers.ValidationError()
 
