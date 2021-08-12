@@ -3,7 +3,7 @@ from django.template.loader import render_to_string
 from django.conf import settings
 
 
-def send_subscribed_email(email, app_id, platform, country, app_icon):
+def send_subscribed_email(email, app_id, platform, country, app_icon, sub_id):
     print("SEND")
     """
     Sends confirmation mail to new users.
@@ -18,6 +18,7 @@ def send_subscribed_email(email, app_id, platform, country, app_icon):
         'platform': platform,
         'country': country,
         "app_icon": app_icon,
+        "sub_id": sub_id
     }
 
     email_subject = "Your daily alert of new app reviews is live"
@@ -32,7 +33,6 @@ def send_subscribed_email(email, app_id, platform, country, app_icon):
     email.attach_alternative(html_content, 'text/html')
     print("DONE")
     return email.send(fail_silently=False)
-
 
 
 def send_feedback_email(email, message):
@@ -54,7 +54,7 @@ def send_feedback_email(email, message):
     print("SEND")
 
 
-def send_review_email(email, app_name, app_id, reviews, platform, app_icon, country):
+def send_review_email(email, app_name, app_id, reviews, platform, app_icon, country, sub_id):
     """
     :param email: User's email.
     :param app_name: App name of subscribed app.
@@ -67,7 +67,7 @@ def send_review_email(email, app_name, app_id, reviews, platform, app_icon, coun
     """
     for review in reviews:
         active = []
-        for i in range(int(review['score'])): # Creates List for looping in django template and adding star image
+        for i in range(int(review['score'])):  # Creates List for looping in django template and adding star image
             # accordingly
             active.append('I')
         remaining = []
@@ -77,7 +77,6 @@ def send_review_email(email, app_name, app_id, reviews, platform, app_icon, coun
         review['remaining'] = remaining
         review['score'] = active
 
-
     context = {
         'app_name': app_name,
         'app_id': app_id,
@@ -85,7 +84,8 @@ def send_review_email(email, app_name, app_id, reviews, platform, app_icon, coun
         'platform': platform,
         'app_icon': app_icon,
         'total_reviews': "50+" if len(reviews) >= 50 else len(reviews),
-        'country': country
+        'country': country,
+        'sub_id': sub_id
     }
     email_subject = "Your app has new reviews"
     html_content = render_to_string("subscribe/email_review.html", context)

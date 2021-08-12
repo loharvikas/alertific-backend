@@ -100,6 +100,22 @@
             border: none;
         }
 
+        .unsubscribe {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .unsubscribe a {
+            text-decoration: none;
+            color: white;
+            background-color: tomato;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;}
+
+        .unsubscribe a:hover{
+            filter: brightness(80%);
+        }
+
         @media screen and (max-width:780px) {
             .container{
                width: 80%;
@@ -157,6 +173,9 @@
 
                 </div>
             {% endfor %}
+        </div>
+         <div class="unsubscribe">
+            <a href="http://www.alertific.com/delete/{{app_id}}" target="_blank">Unsubscribe</a>
         </div>
     </div>
 </body>
