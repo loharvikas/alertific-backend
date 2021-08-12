@@ -20,14 +20,15 @@ def send_feedback_email_task(email, message):
 
 @shared_task
 def send_app_reviews():
+    logger.info("SEND APP REVIEWS")
     for subscriber in Subscriber.objects.all():
         id = subscriber.id
-        print(id)
         send_reviews_based_on_subscription.delay(id)
 
 
 @shared_task
 def send_reviews_based_on_subscription(id):
+    logger.info("SEND APP REVIEWS BASED ON SUBSCRIPTION")
     subscriber = Subscriber.objects.get(id=id)
     subscriptions = Subscription.objects.filter(subscriber=subscriber)
     for subscription in subscriptions:
@@ -45,9 +46,11 @@ def send_reviews_based_on_subscription(id):
 
 @shared_task
 def scrap_app_reviews_for_app_store(id, country_code, country_name, email):
+    logger.info("SEND APP REVIEWS APP STORE")
     app = AppStore.objects.get(pk=id)
     result = fetch_reviews_from_app_store(app.app_id, country_code)
     if result:
+        logger.info("FOUND APP STORE")
         send_review_email_task.delay(email=email,
                                      app_id=app.app_id,
                                      reviews=result,
@@ -59,9 +62,11 @@ def scrap_app_reviews_for_app_store(id, country_code, country_name, email):
 
 @shared_task
 def scrap_app_reviews_for_google_play(id, country_code, country_name, email):
+    logger.info("SEND APP REVIEWS APP GOOGLE PLAY")
     app = GooglePlay.objects.get(pk=id)
     result = fetch_reviews_from_google_play(app.app_id, country_code)
     if result:
+        logger.info("FOUND GOOGLE PLAY")
         send_review_email_task.delay(email=email,
                                      app_id=app.app_id,
                                      reviews=result,

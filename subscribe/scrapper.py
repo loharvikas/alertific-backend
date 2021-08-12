@@ -12,7 +12,8 @@ def is_yesterday(timestamp):
     """
     today = datetime.combine(datetime.today(), time.min) + timedelta(hours=9)
     yesterday = today - timedelta(days=1)
-    return yesterday <= timestamp < today
+    return True
+    # return yesterday <= timestamp < today
 
 
 def fetch_reviews_from_app_store(app_id, country_code):
@@ -22,7 +23,6 @@ def fetch_reviews_from_app_store(app_id, country_code):
     :return: Reviews from App Store
     """
     reviews = fetch_appstore_reviews(str(app_id), country_code, "1")
-    print("APP_NAME:", app_id)
     return reviews
 
 
@@ -40,7 +40,6 @@ def fetch_reviews_from_google_play(app_id, country_code):
         lang="en",
         country=country_code,
         sort=Sort.NEWEST,
-        count=50,
     )
     result_by_date = []
     for result in results:
