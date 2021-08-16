@@ -1,4 +1,3 @@
-
 from django.db import models
 
 
@@ -33,15 +32,15 @@ class Subscriber(models.Model):
 class Subscription(models.Model):
     google_play = models.ForeignKey(GooglePlay, on_delete=models.SET_NULL, null=True, blank=True)
     app_store = models.ForeignKey(AppStore, on_delete=models.SET_NULL, null=True, blank=True)
-    country = models.ForeignKey('Country', on_delete=models.SET_NULL, null=True,  blank=True)
+    country = models.ForeignKey('Country', on_delete=models.SET_NULL, null=True, blank=True)
     subscriber = models.ForeignKey(Subscriber, on_delete=models.CASCADE)
+    last_review_id = models.CharField(max_length=500, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
 
 class Country(models.Model):
     country_code = models.CharField(max_length=2, unique=True)
     country_name = models.CharField(max_length=50, null=True, blank=True)
-
 
     def __str__(self):
         return self.country_code

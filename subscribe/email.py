@@ -3,7 +3,7 @@ from django.template.loader import render_to_string
 from django.conf import settings
 
 
-def send_subscribed_email(email, app_id, platform, country, app_icon, sub_id):
+def send_subscribed_email(email, app_name, platform, country, app_icon, sub_id):
     print("SEND")
     """
     Sends confirmation mail to new users.
@@ -14,7 +14,7 @@ def send_subscribed_email(email, app_id, platform, country, app_icon, sub_id):
     :return:
     """
     context = {
-        'app_name': app_id,
+        'app_name': app_name,
         'platform': platform,
         'country': country,
         "app_icon": app_icon,

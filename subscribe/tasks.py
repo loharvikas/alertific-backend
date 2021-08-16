@@ -7,9 +7,27 @@ from .email import send_feedback_email
 
 
 @shared_task
-def send_subscribe_email_task(email, app_id, platform, country, app_icon, sub_id):
+def send_subscribe_email_task(email, app_name, platform, country, app_icon, sub_id):
     logger.info("Email Sent")
-    return send_subscribed_email(email, app_id, platform, country, app_icon, sub_id)
+    return send_subscribed_email(email, app_name, platform, country, app_icon, sub_id)
+
+
+@shared_task
+def fetch_initial_review(app_id, platform, sub_id, country_code):
+    subscription = Subscription.objects.get(pk=sub_id)
+    if platform == "Google Play":
+        reviews = fetch_reviews_from_google_play(app_id, country_code, sub_id)
+        last_review = reviews[0]
+        last_review_id = last_review["reviewId"]
+        subscription.last_review_id = last_review_id
+        print("Last_review:::", last_review_id)
+        subscription.save()
+    else:
+        reviews = fetch_reviews_from_app_store(app_id, country_code, sub_id)
+        last_review = reviews[0]
+        last_review_id = last_review["reviewId"]
+        subscription.last_review_id = last_review_id
+        subscription.save()
 
 
 @shared_task
@@ -43,11 +61,12 @@ def send_reviews_based_on_subscription(id):
             id = subscription.google_play.id
             scrap_app_reviews_for_google_play.delay(id, country_code, country_name, email, sub_id)
 
+
 @shared_task
 def scrap_app_reviews_for_app_store(id, country_code, country_name, email, sub_id):
     app = AppStore.objects.get(pk=id)
-    result = fetch_reviews_from_app_store(app.app_id, country_code)
-    if result:
+    result = fetch_reviews_from_app_store(app.app_id, country_code, sub_id)
+    if len(result) > 10:
         send_review_email_task.delay(email=email,
                                      app_id=app.app_id,
                                      reviews=result,
@@ -55,14 +74,15 @@ def scrap_app_reviews_for_app_store(id, country_code, country_name, email, sub_i
                                      platform="App Store",
                                      app_icon=app.app_icon,
                                      country_name=country_name,
-                                     sub_id = sub_id
+                                     sub_id=sub_id
                                      )
+
 
 @shared_task
 def scrap_app_reviews_for_google_play(id, country_code, country_name, email, sub_id):
     app = GooglePlay.objects.get(pk=id)
-    result = fetch_reviews_from_google_play(app.app_id, country_code)
-    if result:
+    result = fetch_reviews_from_google_play(app.app_id, country_code, sub_id)
+    if len(result) >= 30:
         send_review_email_task.delay(email=email,
                                      app_id=app.app_id,
                                      reviews=result,
@@ -71,8 +91,7 @@ def scrap_app_reviews_for_google_play(id, country_code, country_name, email, sub
                                      app_icon=app.app_icon,
                                      country_name=country_name,
                                      sub_id=sub_id
-                                    )
-
+                                     )
 
 
 @shared_task

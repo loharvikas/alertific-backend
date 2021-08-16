@@ -3,38 +3,28 @@ from google_play_scraper import Sort, reviews
 from django.conf import settings
 import requests
 from requests.exceptions import HTTPError
+from subscribe.models import  Subscription
 
 
-def is_yesterday(timestamp):
-    """
-    :param timestamp:
-    :return: Checks if timestamp of reviews was posted between specific time
-    """
-    today = datetime.combine(datetime.today(), time.min) + timedelta(hours=9)
-    yesterday = today - timedelta(days=1)
-    return yesterday <= timestamp < today
 
-
-def fetch_reviews_from_app_store(app_id, country_code):
+def fetch_reviews_from_app_store(app_id, country_code, sub_id):
     """
     :param app_id:  Unique App Id.
     :param country_code: ISO Country Code.
     :return: Reviews from App Store
     """
-    reviews = fetch_appstore_reviews(str(app_id), country_code, "1")
-    print("APP_NAME:", app_id)
+    reviews = fetch_appstore_reviews(str(app_id), country_code, "1", sub_id)
     return reviews
 
 
-def fetch_reviews_from_google_play(app_id, country_code):
+def fetch_reviews_from_google_play(app_id, country_code, sub_id):
     """
     Use google_play_scraper library to fetch most recent reviews from Google Play Store.
     :param app_id: Unique App Id.
     :param country_code: ISO Country Code
     :return: List of reviews
     """
-    print("GOOGLE_PLAY:", app_id)
-    print("COUNTRY:", country_code)
+    subscription = Subscription.objects.get(pk=sub_id)
     results, continution_token = reviews(
         app_id,
         lang="en",
@@ -42,18 +32,27 @@ def fetch_reviews_from_google_play(app_id, country_code):
         sort=Sort.NEWEST,
         count=50,
     )
-    result_by_date = []
+    all_reviews = []
     for result in results:
         result['version'] = result.pop('reviewCreatedVersion')
-        date_time = result['at']
-        if is_yesterday(date_time):
-            date_time = datetime.strftime(date_time, '%Y-%m-%d')
-            result['at'] = date_time
-            result_by_date.append(result)
-    return result_by_date
+        print("USERNAME:", result["userName"])
+        review_id = result["reviewId"]
+        print(subscription.last_review_id, review_id)
+        if review_id == subscription.last_review_id:
+            print("BREAK")
+            break
+        all_reviews.append(result)
+    if len(all_reviews) >= 30:
+        last_review = all_reviews[0]
+        print("USERNAMEXXX:", last_review["userName"])
+        last_review_id = last_review["reviewId"]
+        subscription.last_review_id = last_review_id
+        subscription.save()
+
+    return all_reviews
 
 
-def fetch_appstore_reviews(app_id, country, page):
+def fetch_appstore_reviews(app_id, country, page, sub_id):
     """
     Fetch reviews from Itunes RSS feeds.
     :param app_id:  Unique App Id.
@@ -61,6 +60,7 @@ def fetch_appstore_reviews(app_id, country, page):
     :param page: Numbers of page to be fetched max. 10
     :return: List of reviews
     """
+    subscription = Subscription.objects.get(pk=sub_id)
     url = 'https://itunes.apple.com/rss/customerreviews/page=' + page + '/id=' + app_id + '/sortby=mostrecent/json?cc=' + country
     print(url)
     try:
@@ -79,16 +79,23 @@ def fetch_appstore_reviews(app_id, country, page):
     reviews = list()
     for review in entry:
         comment = dict()
-        comment['id'] = review['id']['label']
+        comment['reviewId'] = review['id']['label']
         comment['userName'] = review['author']['name']['label']
         comment['score'] = review['im:rating']['label']
         comment['title'] = review['title']['label']
         comment['content'] = review['content']['label']
         comment['version'] = review['im:version']['label']
         comment['at'] = review['updated']['label'].split('T')[0]
-        date = comment['at']
-        date_time = datetime.strptime(date, '%Y-%m-%d')
-        if is_yesterday(date_time):
-            reviews.append(comment)
+        review_id = comment["reviewId"]
+        if review_id == subscription.last_review_id:
+            print("BREAK")
+            break
+        reviews.append(comment)
+
+    if len(reviews) >= 10:
+        last_review = reviews[0]
+        last_review_id = last_review["reviewId"]
+        subscription.last_review_id = last_review_id
+        subscription.save()
 
     return reviews

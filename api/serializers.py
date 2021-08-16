@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from subscribe.models import Subscriber, AppStore, GooglePlay, Feedback, Country, Subscription
-from subscribe.tasks import send_subscribe_email_task, send_feedback_email_task
+from subscribe.tasks import send_subscribe_email_task, send_feedback_email_task, fetch_initial_review
 import pycountry
 
 
@@ -59,15 +59,13 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         country = validated_data["country"]
         subscriber = validated_data["subscriber"]
         subscription = None
-        print("ID DID")
         if "google_play" in validated_data:
-            print("GGOGG")
             google_play = validated_data["google_play"]
             app_name = google_play.app_name
             app_icon = google_play.app_icon
+            app_id = google_play.app_id
             if not Subscription.objects.filter(google_play=google_play, subscriber=subscriber,
                                                country=country).exists():
-                print("TTOGG")
                 subscription = Subscription.objects.create(
                     google_play=google_play,
                     subscriber=subscriber,
@@ -77,8 +75,8 @@ class SubscriptionSerializer(serializers.ModelSerializer):
             app_store = validated_data["app_store"]
             app_name = app_store.app_name
             app_icon = app_store.app_icon
+            app_id = app_store.app_id
             if not Subscription.objects.filter(app_store=app_store, subscriber=subscriber, country=country).exists():
-                print("TTOGG")
                 subscription = Subscription.objects.create(
                     app_store=app_store,
                     subscriber=subscriber,
@@ -91,6 +89,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
                                                    country.country_name,
                                                    app_icon,
                                             subscription.pk)
+            fetch_initial_review.delay(app_id, platform, subscription.pk, country.country_code)
             return subscription
         raise serializers.ValidationError()
 
