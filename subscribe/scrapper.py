@@ -3,8 +3,7 @@ from google_play_scraper import Sort, reviews
 from django.conf import settings
 import requests
 from requests.exceptions import HTTPError
-from subscribe.models import  Subscription
-
+from subscribe.models import Subscription
 
 
 def fetch_reviews_from_app_store(app_id, country_code, sub_id):
@@ -42,7 +41,7 @@ def fetch_reviews_from_google_play(app_id, country_code, sub_id):
             print("BREAK")
             break
         all_reviews.append(result)
-    if len(all_reviews) >= 30:
+    if len(all_reviews) >= 5:
         last_review = all_reviews[0]
         print("USERNAMEXXX:", last_review["userName"])
         last_review_id = last_review["reviewId"]
