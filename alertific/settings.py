@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
     # Third Party Apps
     'django_celery_beat',
+    'import_export',
     'rest_framework',
     'corsheaders',
     'storages'

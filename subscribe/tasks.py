@@ -83,7 +83,7 @@ def scrap_app_reviews_for_app_store(id, country_code, country_name, email, sub_i
 def scrap_app_reviews_for_google_play(id, country_code, country_name, email, sub_id):
     app = GooglePlay.objects.get(pk=id)
     result = fetch_reviews_from_google_play(app.app_id, country_code, sub_id)
-    if len(result) >= 5:
+    if len(result) >= 30:
         send_review_email_task.delay(email=email,
                                      app_id=app.app_id,
                                      reviews=result,
