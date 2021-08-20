@@ -41,7 +41,7 @@ def fetch_reviews_from_google_play(app_id, country_code, sub_id):
             print("BREAK")
             break
         all_reviews.append(result)
-    if len(all_reviews) >= 30:
+    if all_reviews:
         last_review = all_reviews[0]
         print("USERNAMEXXX:", last_review["userName"])
         last_review_id = last_review["reviewId"]
