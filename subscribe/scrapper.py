@@ -35,6 +35,9 @@ def fetch_reviews_from_google_play(app_id, country_code, sub_id):
     all_reviews = []
     for result in results:
         result['version'] = result.pop('reviewCreatedVersion')
+        date = result['at']
+        date_time = datetime.strftime(date, '%Y-%m-%d')
+        result['at'] = date_time
         print("USERNAME:", result["userName"])
         review_id = result["reviewId"]
         print(subscription.last_review_id, review_id)
