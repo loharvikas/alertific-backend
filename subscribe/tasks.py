@@ -11,6 +11,10 @@ def send_subscribe_email_task(email, app_name, platform, country, app_icon, sub_
     logger.info("Email Sent")
     return send_subscribed_email(email, app_name, platform, country, app_icon, sub_id)
 
+@shared_task
+def run_celery():
+    print("RUNNING")
+    return
 
 @shared_task
 def fetch_initial_review(app_id, platform, sub_id, country_code):
