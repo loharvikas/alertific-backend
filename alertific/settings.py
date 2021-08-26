@@ -190,7 +190,8 @@ CELERY_BEAT_SCHEDULE = {
     "send_review_email": {
         "task": "subscribe.tasks.send_app_reviews",
         'schedule': crontab(hour=9, minute=0),
-    }
+    },
+
 }
 
 # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
