@@ -12,6 +12,10 @@
             padding: 0;
         }
 
+        a {
+            text-decoration: none;
+        }
+
         body{
             font-family: sans-serif;
             background-color: white;
@@ -144,7 +148,9 @@
 <body>
     <div class="container">
         <div class="brand">
-            <h1 class="brand-name">Alertific</h1>
+            <a href="https://www.alertific.com">
+                <h1 class="brand-name">Alertific</h1>
+            </a>
             <p class="brand-description">Your app has {{total_reviews}} new {{platform}} reviews</p>
         </div>
         <div class="app-name">
@@ -175,7 +181,8 @@
             {% endfor %}
         </div>
          <div class="unsubscribe">
-            <a href="http://www.alertific.com/delete/{{app_id}}" target="_blank">Unsubscribe</a>
+            <a href="https://www.alertific.com/delete/{{app_id}}" target="_blank">Unsubscribe</a>
+             <a href="https://www.alertific.com" target="_blank">Create another alert</a>
         </div>
     </div>
 </body>

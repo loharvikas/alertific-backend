@@ -1,4 +1,3 @@
-
 from rest_framework import serializers
 from subscribe.models import Subscriber, AppStore, GooglePlay, Feedback, Country, Subscription
 from subscribe.tasks import send_subscribe_email_task, send_feedback_email_task, fetch_initial_review
