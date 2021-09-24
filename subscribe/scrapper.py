@@ -1,10 +1,8 @@
-from datetime import datetime, time, timedelta
+from datetime import datetime
 from google_play_scraper import Sort, reviews
-from django.conf import settings
 import requests
 from requests.exceptions import HTTPError
-from subscribe.models import  Subscription
-
+from subscribe.models import Subscription
 
 
 def fetch_reviews_from_app_store(app_id, country_code, sub_id):
@@ -34,26 +32,28 @@ def fetch_reviews_from_google_play(app_id, country_code, sub_id):
     )
     all_reviews = []
     for result in results:
-        result['version'] = result.pop('reviewCreatedVersion')
         date = result['at']
+        date_time = datetime.strftime(date, '%Y-%m-%d')
+        result['at'] = date_time
+        result['version'] = result.pop('reviewCreatedVersion')
         date_time = datetime.strftime(date, '%Y-%m-%d')
         result['at'] = date_time
         print("USERNAME:", result["userName"])
         review_id = result["reviewId"]
         print(subscription.last_review_id, review_id)
+        review_id = result["reviewId"]
         if review_id == subscription.last_review_id:
             print("BREAK")
             break
         all_reviews.append(result)
-    if len(all_reviews) >= 30:
+
+    if all_reviews:
         last_review = all_reviews[0]
-        print("USERNAMEXXX:", last_review["userName"])
         last_review_id = last_review["reviewId"]
         subscription.last_review_id = last_review_id
         subscription.save()
 
     return all_reviews
-
 
 def fetch_appstore_reviews(app_id, country, page, sub_id):
     """
@@ -95,7 +95,7 @@ def fetch_appstore_reviews(app_id, country, page, sub_id):
             break
         reviews.append(comment)
 
-    if len(reviews) >= 10:
+    if reviews:
         last_review = reviews[0]
         last_review_id = last_review["reviewId"]
         subscription.last_review_id = last_review_id

@@ -32,6 +32,12 @@ class SubscriptionListView(generics.ListCreateAPIView):
     serializer_class = SubscriptionSerializer
 
 
+class SubscriptionDeleteView(generics.DestroyAPIView):
+    queryset = Subscription.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = SubscriptionSerializer
+
+
 class FeedbackSerializerView(generics.ListCreateAPIView):
     """
         SerializerView for creating feedback

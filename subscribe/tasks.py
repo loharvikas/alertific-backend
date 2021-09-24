@@ -1,3 +1,4 @@
+
 from celery import shared_task
 from subscribe.email import send_subscribed_email, send_review_email
 from celery.utils.log import logger
@@ -11,10 +12,6 @@ def send_subscribe_email_task(email, app_name, platform, country, app_icon, sub_
     logger.info("Email Sent")
     return send_subscribed_email(email, app_name, platform, country, app_icon, sub_id)
 
-@shared_task
-def run_celery():
-    print("RUNNING")
-    return
 
 @shared_task
 def fetch_initial_review(app_id, platform, sub_id, country_code):
@@ -70,7 +67,7 @@ def send_reviews_based_on_subscription(id):
 def scrap_app_reviews_for_app_store(id, country_code, country_name, email, sub_id):
     app = AppStore.objects.get(pk=id)
     result = fetch_reviews_from_app_store(app.app_id, country_code, sub_id)
-    if len(result) > 10:
+    if len(result) > 1:
         send_review_email_task.delay(email=email,
                                      app_id=app.app_id,
                                      reviews=result,
@@ -86,7 +83,7 @@ def scrap_app_reviews_for_app_store(id, country_code, country_name, email, sub_i
 def scrap_app_reviews_for_google_play(id, country_code, country_name, email, sub_id):
     app = GooglePlay.objects.get(pk=id)
     result = fetch_reviews_from_google_play(app.app_id, country_code, sub_id)
-    if len(result) >= 30:
+    if result:
         send_review_email_task.delay(email=email,
                                      app_id=app.app_id,
                                      reviews=result,

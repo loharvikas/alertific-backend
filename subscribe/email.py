@@ -2,7 +2,6 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
 
-
 def send_subscribed_email(email, app_name, platform, country, app_icon, sub_id):
     print("SEND")
     """
