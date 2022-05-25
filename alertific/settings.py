@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 from __future__ import absolute_import
 
+import django
+from celery.schedules import crontab
+
 from pathlib import Path
 import psycopg2
 import django_heroku
@@ -24,12 +27,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY", "sfoihwifwegfwhfjbfo2bfi2gf2fkjwblisbvviusfwfwejfhiwfw")
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY", "sfoihwifwegfwhfjbfo2bfi2gf2fkjwblisbvviusfwfwejfhiwfw")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["https://vocall-server.herokuapp.com"]
 
 # Application definition
 
@@ -93,24 +97,21 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'alertific.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
 
 DATABASES = {
     'default': {
 
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
 
-        'NAME': 'app_reviews',
+        'NAME': os.getenv('DB_NAME'),
 
-        'USER': 'vikas',
+        'USER': os.getenv('DB_USER'),
 
-        'PASSWORD': 'vikas123',
+        'PASSWORD': os.getenv('DB_PASSWORD'),
 
-        'HOST': 'localhost',
+        'HOST': os.getenv('DB_HOST'),
 
-        'PORT': '',
+        'PORT': os.getenv('DB_PORT'),
 
     }
 }
@@ -120,7 +121,7 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     DATABASES['default'] = dj_database_url.config(
-                        conn_max_age=600, ssl_require=True)
+        conn_max_age=600, ssl_require=True)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -169,6 +170,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
 
 # EMAIL CONFIGURATIONS
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
@@ -178,7 +180,6 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 # CELERY CONFIGURATIONS
-from celery.schedules import crontab
 
 CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379')
 CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379')
@@ -193,8 +194,16 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-# If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS: False
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://www.alertific.vercel.app",
+    "https://alertific.vercel.app",
+    "http://127.0.0.1:3000",
+]
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS = ['https://alertific.vercel.app', ]
 
 django_heroku.settings(locals())

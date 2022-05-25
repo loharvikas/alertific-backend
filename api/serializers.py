@@ -51,7 +51,6 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         depth = 1
 
     def create(self, validated_data):
-        print("VALIDS:", validated_data)
         country_created = False  # To check if existing user adds new country
         validated_data, platform = self.create_apps(validated_data)
         validated_data = self.create_country(validated_data)
@@ -84,12 +83,13 @@ class SubscriptionSerializer(serializers.ModelSerializer):
                 )
         if subscription:
             send_subscribe_email_task.delay(subscriber.email,
-                                                   app_name,
-                                                   platform,
-                                                   country.country_name,
-                                                   app_icon,
+                                            app_name,
+                                            platform,
+                                            country.country_name,
+                                            app_icon,
                                             subscription.pk)
-            fetch_initial_review.delay(app_id, platform, subscription.pk, country.country_code)
+            fetch_initial_review.delay(
+                app_id, platform, subscription.pk, country.country_code)
             return subscription
         raise serializers.ValidationError()
 
@@ -102,7 +102,8 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         if country:
             country_code = country.pop("country_code")
             country_name = convert_iso_to_country(country_code)
-            country, created = Country.objects.get_or_create(country_code=country_code)
+            country, created = Country.objects.get_or_create(
+                country_code=country_code)
             country.country_name = country_name
             country.save()
         validated_data["country"] = country
@@ -112,7 +113,8 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         subscriber = validated_data.get("subscriber")
         if subscriber:
             email = subscriber.pop("email")
-            subscriber_obj, sub_created, = Subscriber.objects.get_or_create(email=email)
+            subscriber_obj, sub_created, = Subscriber.objects.get_or_create(
+                email=email)
         validated_data["subscriber"] = subscriber_obj
         return validated_data
 

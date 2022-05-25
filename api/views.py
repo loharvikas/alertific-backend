@@ -5,9 +5,7 @@ from rest_framework.permissions import AllowAny
 from django.views.generic import View
 import play_scraper
 from itunes_app_scraper.scraper import AppStoreScraper
-from django.conf import settings
-from django.http import JsonResponse, HttpResponse, HttpResponseNotFound
-import os
+from django.http import JsonResponse
 
 
 class SubscriberAPIListView(generics.ListCreateAPIView):
@@ -63,8 +61,6 @@ class GooglePlayAppListView(View):
         :param kwargs:
         :return: List of apps in JSON format.
         """
-        print("APP_NAME:", app_name)
-        print(request)
         country_code = str(country_code).lower()
         data = play_scraper.search(app_name, page=1, gl=country_code)
         return JsonResponse(data, safe=False)
